@@ -1,6 +1,7 @@
+#include "test.h"
 #include "matrix.h"
 
-void test_matrix(void) {
+char *test_matrix(void) {
     scalar array_vec[] = {1.0,2.0,3.0};
     vector vec = vector_from_array(array_vec,3);
     scalar array_mat[][2] = {{1.0,2.0},{0.0,1.0},{-1.0,1.0}};
@@ -40,4 +41,5 @@ void test_matrix(void) {
     //    print_matrix_matlab(matrix_divide(B,D));
     printf("B = \n");
     print_matrix_matlab(B);
+    return NULL;
 }
