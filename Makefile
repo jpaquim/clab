@@ -1,6 +1,6 @@
 ### Target Files
 TARGET_EXE = exe
-TARGET_LIB = libclab.a
+TARGET_LIB = libc-lab.a
 
 
 ### External library pcg_random ###
