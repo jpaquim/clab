@@ -65,3 +65,4 @@ Temporary Items
 *.d
 exe
 test_all
+build

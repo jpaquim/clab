@@ -21,27 +21,28 @@
 #     http://www.pcg-random.org
 #
 
-all:
-	cd src; $(MAKE)
-	cd test-low; $(MAKE)
-	cd test-high; $(MAKE)
-	cd sample; $(MAKE)
+# Simplified Makefile for library compilation
 
-PREFIX = /usr/local
+TARGET_LIB = libpcg_random.a
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:src/%.c=build/%.o)
+CPPFLAGS += -Iinclude
+CFLAGS += -O3 -std=c99
 
-install: all
-	install src/libpcg_random.a $PREFIX/lib
-	install -m 0644 include/pcg_variants.h $PREFIX/include
+all: library
+	@echo library built
 
-test:   all
-	cd test-low; $(MAKE) test
-	cd test-high; $(MAKE) test
+library: $(TARGET_LIB)
+
+$(TARGET_LIB): $(OBJ)
+	@echo archiving: $(TARGET_LIB)
+	@ar rc $@ $^
+	@ranlib $@
+
+build/%.o: src/%.c
+	@mkdir -p build
+	@echo compiling: $< '->' $@
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	cd src; $(MAKE) clean
-	cd test-low; $(MAKE) clean
-	cd test-high; $(MAKE) clean
-	cd sample; $(MAKE) clean
-	rm -f extras/*.o
-
-	
+	@$(RM) -r build $(TARGET_LIB)

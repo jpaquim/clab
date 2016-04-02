@@ -8,11 +8,15 @@ EXT = pcg_random
 EXT_DIR = pcg-c-0.94
 
 
+### Linker flags ###
+EXTTSTFLAGS =  -lc-lab
+
+
 ### Base Makefile ###
 include MakefileBase
 
 
-### Make external library ### 
+### Make external library ###
 $($(EXT)_A_SRC):
 	@echo building $(EXT)
-	@make -C $(EXT_DIR)/src
+	@make -C $(EXT_DIR)

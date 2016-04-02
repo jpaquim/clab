@@ -1,10 +1,10 @@
 #include "sample.h"
 
 void initializeRNG(void) {
-    pcg32_srandom(42u,52u); // deterministic seed
-//    uint64_t seeds[2];
-//    entropy_getbytes((void*)seeds, sizeof(seeds));
-//    pcg32_srandom_r(&rng, seeds[0], seeds[1]);
+    // pcg32_srandom(42u,52u); // deterministic seed
+   uint64_t seeds[2];
+   entropy_getbytes((void*)seeds, sizeof(seeds));
+   pcg32_srandom(seeds[0], seeds[1]);
 }
 
 scalar sample_uniform_standard(void) {

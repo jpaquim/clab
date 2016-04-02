@@ -9,14 +9,14 @@ SRC_EXT = c
 CC = gcc
 
 # preprocessor, compiler, and linker flags
-PPFLAGS = -I$(INC_DIR) -I$(LIB_INC)
-CFLAGS = $(PPFLAGS) -g -std=c99 -pedantic -Wall -Wextra \
+CPPFLAGS = -I$(INC_DIR) -I$(LIB_INC)
+CFLAGS = $(CPPFLAGS) -g -std=c99 -pedantic -Wall -Wextra \
           -Waggregate-return -Wcast-align -Wfloat-equal -Wformat=2 \
           -Wpointer-arith -Wstrict-overflow=2 -Wstrict-prototypes -Wshadow -Wwrite-strings \
           -Wcast-qual -Wmissing-prototypes -Wswitch-enum -Wswitch-default -Wunreachable-code \
           # -Werror # -Wconversion
 # other useful flags: -save-temps -masm=intel -m64 -march=native -Og -O -Os -Ofast 
-LFLAGS = -L$(LIB_DIR) -lpcg_random -lm
+LFLAGS = -L./$(LIB_DIR) -l$(EXT) -lm
 
 
 ### Folder Structure ###
@@ -50,7 +50,7 @@ TST_SRC = $(wildcard $(TST_DIR)/*.$(SRC_EXT))
 TST_OBJ = $(TST_SRC:$(TST_DIR)/%.$(SRC_EXT)=$(TST_BLD)/%.o)
 TST_DEP = $(TST_OBJ:%.o=%.d)
 TST_CLN = $(TST_EXE) $(TST_BLD)
-TST_LFLAGS = -L. -lclab $(LFLAGS)
+TST_LFLAGS += -L. $(LFLAGS)
 
 
 ### Default Targets
@@ -62,7 +62,7 @@ all: main library tests
 $(EXT)_H = $(LIB_INC)/$(EXT)
 $(EXT)_A = $(LIB_DIR)/lib$(EXT).a
 $(EXT)_H_SRC = $(EXT_DIR)/include
-$(EXT)_A_SRC = $(EXT_DIR)/src/lib$(EXT).a
+$(EXT)_A_SRC = $(EXT_DIR)/lib$(EXT).a
 LIB_LNS = $($(EXT)_H) $($(EXT)_A)
 
 
@@ -133,18 +133,19 @@ $(TST_BLD)/%.o: $(TST_DIR)/%.$(SRC_EXT) $(LIB_LNS)
 -include $(TST_DEP)
 
 
-### Clean Build Files and Symbolic Links ###
+### Clean ###
 clean-all: clean clean-symlinks
 
-### Clean Binaries and Objects ###
+# clean binaries and objects
 clean:
 	@$(RM) -r $(CLN) $(TST_CLN)
 	@echo cleaning: $(CLN) $(TST_CLN)
 
-### Clean Symbolic Links ###
+# clean symbolic links
 clean-symlinks:
 	@$(RM) -r $(LIB_LNS)
 	@echo cleaning: $(LIB_LNS)
 
+
 ### Phony Targets ###
-.PHONY: all main symlinks library tests clean run symlink
+.PHONY: all symlinks main library tests run clean clean-all clean-symlinks
