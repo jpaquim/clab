@@ -9,7 +9,7 @@ EXT_DIR = pcg-c-0.94
 
 
 ### Linker flags ###
-EXTTSTFLAGS =  -lc-lab
+EXTTSTFLAGS = -lc-lab
 
 
 ### Base Makefile ###

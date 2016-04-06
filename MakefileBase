@@ -9,23 +9,26 @@ SRC_EXT = c
 CC = gcc
 
 # preprocessor, compiler, and linker flags
-CPPFLAGS = -I$(INC_DIR) -I$(LIB_INC)
-CFLAGS = $(CPPFLAGS) -g -std=c99 -pedantic -Wall -Wextra \
-          -Waggregate-return -Wcast-align -Wfloat-equal -Wformat=2 \
-          -Wpointer-arith -Wstrict-overflow=2 -Wstrict-prototypes -Wshadow -Wwrite-strings \
-          -Wcast-qual -Wmissing-prototypes -Wswitch-enum -Wswitch-default -Wunreachable-code \
-          # -Werror # -Wconversion
-# other useful flags: -save-temps -masm=intel -m64 -march=native -Og -O -Os -Ofast 
-LFLAGS = -L./$(LIB_DIR) -l$(EXT) -lm
+CPPFLAGS += -I$(INC_DIR) -I$(LIB_INC)
+CFLAGS += $(CPPFLAGS) -g -std=c99 -pedantic -Wall -Wextra                  \
+          -Waggregate-return -Wcast-align -Wformat=2                       \
+          -Wpointer-arith -Wstrict-overflow=2 -Wstrict-prototypes -Wshadow \
+          -Wwrite-strings -Wcast-qual -Wmissing-prototypes -Wswitch-enum   \
+          -Wswitch-default -Wunreachable-code                              \
+          -Werror # -Wconversion #  -Wfloat-equal
+
+# other useful flags: -save-temps -masm=intel -m64 -march=native -Og -O -Os -Ofast
+
+LDFLAGS += -L./$(LIB_DIR) -l$(EXT) -lm
 
 
 ### Folder Structure ###
-# SRC_DIR - implementation files 
-# INC_DIR - header files 
-# OBJ_DIR - object files 
-# DEP_DIR - dependency files 
-# LIB_DIR - external library binaries 
-# LIB_INC - external library headers 
+# SRC_DIR - implementation files
+# INC_DIR - header files
+# OBJ_DIR - object files
+# DEP_DIR - dependency files
+# LIB_DIR - external library binaries
+# LIB_INC - external library headers
 # TST_DIR - test source files
 # TST_BLD - test build files
 
@@ -50,7 +53,7 @@ TST_SRC = $(wildcard $(TST_DIR)/*.$(SRC_EXT))
 TST_OBJ = $(TST_SRC:$(TST_DIR)/%.$(SRC_EXT)=$(TST_BLD)/%.o)
 TST_DEP = $(TST_OBJ:%.o=%.d)
 TST_CLN = $(TST_EXE) $(TST_BLD)
-TST_LFLAGS += -L. $(LFLAGS)
+TST_LDFLAGS += -L. $(LDFLAGS)
 
 
 ### Default Targets
@@ -83,7 +86,7 @@ main: $(TARGET_EXE)
 # link the final executable
 $(TARGET_EXE): $(OBJ)
 	@echo linking: $@
-	@$(CC) $^ $(LFLAGS) -o $@
+	@$(CC) $^ $(LDFLAGS) -o $@
 	@echo successfully built: $@
 
 # compile object files, and generate dependency files
@@ -119,7 +122,7 @@ tests: $(TST_EXE)
 # link the final executable
 $(TST_EXE): $(TST_OBJ) $(TARGET_LIB)
 	@echo linking: $@
-	@$(CC) $^ $(TST_LFLAGS) -o $@
+	@$(CC) $^ $(TST_LDFLAGS) -o $@
 	@echo successfully built: $@
 
 # compile object files, and generate dependency files

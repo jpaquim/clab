@@ -4,16 +4,16 @@
 
 int tests_run = 0;
 
-char *test_all(void) {
-    mu_run_test(test_scalar);
-    mu_run_test(test_vector);
+const char *test_all(void) {
+//    mu_run_test(test_scalar);
     mu_run_test(test_matrix);
-    mu_run_test(test_sample);
+//    mu_run_test(test_vector);
+//    mu_run_test(test_sample);
     return NULL;
 }
 
 int main(void) {
-    char *result = test_all();
+    const char *result = test_all();
     if (result != NULL)
         printf("%s\n", result);
     else

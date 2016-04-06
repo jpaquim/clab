@@ -19,4 +19,6 @@ scalar sample_uniform(scalar a, scalar b);
 // returns a number sampled from an exponential distribution of parameter lambda
 scalar sample_exponential(scalar lambda);
 
+
+
 #endif

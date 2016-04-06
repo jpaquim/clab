@@ -44,7 +44,7 @@
       allowLocationSimulation = "YES">
       <PathRunnable
          runnableDebuggingMode = "0"
-         FilePath = "/Users/jp/Dropbox/Thesis/C-Code/LAB/exe">
+         FilePath = "/Users/jp/Dropbox/Thesis/C-Code/MondrianForest-C/C-LAB/test_all">
       </PathRunnable>
       <MacroExpansion>
          <BuildableReference

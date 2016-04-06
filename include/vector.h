@@ -6,70 +6,69 @@
 #include <string.h> // for memcpy
 #include "scalar.h"
 
-struct _vector {
-    scalar *data;
+typedef struct {
+    scalar *i;
     size_t n;
-};
-typedef struct _vector* vector;
+} vector;
 
 // memory management
 
 // returns vector of length n initialized with zeros
-vector vector_zeros(size_t n);
+vector v_zeros(size_t n);
 
 // returns vector of size n initialized with contents of array
-vector vector_from_array(const scalar *array, size_t n);
+vector v_from_array(scalar *array, size_t n);
 
 // returns a copy of the vector
-vector copy_vector(const vector vec);
+vector v_copy(vector vec);
 
 // deletes the vector from memory
-void delete_vector(vector vec);
+void v_delete(vector vec);
 
 
 
 // unary operations
 
 // prints the vector's contents to stdin
-void print_vector(const vector vec);
+void v_print(vector vec);
 
 // returns the maximum element of the vector
-scalar vector_max_elem(const vector vec);
+scalar v_max_elem(vector vec);
 
 // computes the sum of all elements in the vector
-scalar vector_sum_elem(const vector vec);
+scalar v_sum_elem(vector vec);
 
 
 
 // binary operations
 
 // check if vectors are the same length
-void check_vector_sizes(const vector a, const vector b);
+void v_check_sizes(vector a, vector b);
 
 // applies a binary function to corresponding element pairs and returns result
-vector vector_bsxfun(binary_function f, const vector a, const vector b);
+vector v_bsxfun(binary_function f, vector a, vector b);
 
 // macro to simplify multiple vector function declarations of the same kind
-#define vector_function_prototype(op)              \
-vector vector_##op(const vector a, const vector b)
+#define v_function_prototype(op)              \
+vector v_##op(vector a, vector b)
 
-vector_function_prototype(plus);    // vector_plus
-vector_function_prototype(minus);   // vector_minus
-vector_function_prototype(times);   // vector_times
-vector_function_prototype(divide);  // vector_divide
-vector_function_prototype(idivide); // vector_idivide
-vector_function_prototype(mod);     // vector_mod
-vector_function_prototype(rem);     // vector_rem
-vector_function_prototype(power);   // vector_power
-vector_function_prototype(max);     // vector_max
-vector_function_prototype(min);     // vector_min
-vector_function_prototype(atan2);   // vector_atan2
-vector_function_prototype(atan2d);  // vector_atan2d
+v_function_prototype(plus);    // v_plus
+v_function_prototype(minus);   // v_minus
+v_function_prototype(times);   // v_times
+v_function_prototype(divide);  // v_divide
+v_function_prototype(idivide); // v_idivide
+v_function_prototype(mod);     // v_mod
+v_function_prototype(rem);     // v_rem
+v_function_prototype(power);   // v_power
+v_function_prototype(max);     // v_max
+v_function_prototype(min);     // v_min
+v_function_prototype(atan2);   // v_atan2
+v_function_prototype(atan2d);  // v_atan2d
 
 // returns the product of a vector with a scalar
-vector vector_times_scalar(const vector a, scalar b);
+vector v_times_scalar(vector a, scalar b);
 
 // returns the dot product of two vectors
-scalar vector_dot(const vector a, const vector b);
+scalar v_dot(vector a, vector b);
 
 #endif
