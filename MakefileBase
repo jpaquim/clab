@@ -17,7 +17,8 @@ CFLAGS += $(CPPFLAGS) -g -std=c99 -pedantic -Wall -Wextra                  \
           -Wswitch-default -Wunreachable-code                              \
           -Werror # -Wconversion #  -Wfloat-equal
 
-# other useful flags: -save-temps -masm=intel -m64 -march=native -Og -O -Os -Ofast
+# other useful flags: -save-temps -masm=intel -m64 -march=native -Og -O -Os \
+-Ofast -fno-stack-protector -fno-asynchronous-unwind-tables
 
 LDFLAGS += -L./$(LIB_DIR) -l$(EXT) -lm
 
