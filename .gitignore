@@ -85,6 +85,7 @@ xcuserdata/
 
 ### My Ignores ###
 *.d
-exe
+*.a
 build
+c-lab
 test_all
