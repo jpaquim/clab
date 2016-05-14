@@ -3,8 +3,8 @@
 
 #include <math.h>
 #include <time.h>
-#include "pcg_variants.h"
-#include "entropy.h"
+#include "pcg_random/pcg_variants.h"
+#include "pcg_random/entropy.h"
 #include "matrix.h"
 
 // initializes the random number generator

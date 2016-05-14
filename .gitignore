@@ -87,5 +87,7 @@ xcuserdata/
 *.d
 *.a
 build
-c-lab
-test_all
+install
+.uninstall
+clab
+test-all

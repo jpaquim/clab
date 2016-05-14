@@ -6,10 +6,17 @@
 # Makefile.inc should define
 # TGT_EXE - target executable
 # TGT_LIB - target library
-# EXT_LIB - external libraries
 
 TGT_EXE ?= exe
-TGT_LIB ?= liblib.a
+TGT_LIB ?= lib
+TGT_LIB_A := lib$(TGT_LIB).a
+
+
+### Installation Folders ###
+prefix ?= install
+INST_INC := $(prefix)/include/$(TGT_LIB)
+INST_LIB := $(prefix)/lib
+INST_CLN := $(INST_INC) $(INST_LIB)/$(TGT_LIB_A)
 
 
 ### Folder Structure ###
@@ -27,7 +34,7 @@ INC_DIR := include
 OBJ_DIR := build
 DEP_DIR := $(OBJ_DIR)
 LIB_DIR := lib
-TST_EXE := test_all
+TST_EXE := test-all
 TST_SRC_DIR := test
 TST_OBJ_DIR := $(TST_SRC_DIR)/$(OBJ_DIR)
 
@@ -47,28 +54,30 @@ TST_OBJ := $(TST_SRC:$(TST_SRC_DIR)/%.$(SRC_EXT)=$(TST_OBJ_DIR)/%.o)
 TST_DEP := $(TST_OBJ:%.o=%.d)
 
 # cleaned files
-CLN := $(TGT_EXE) $(TGT_LIB) $(OBJ_DIR) $(DEP_DIR) $(TST_EXE) $(TST_OBJ_DIR)
+CLN := $(TGT_EXE) $(TGT_LIB_A) $(OBJ_DIR) $(DEP_DIR) $(TST_EXE) $(TST_OBJ_DIR)
 
+# object files used in the executable
+EXE_OBJ := main.o
 
-# external library directories
-#EXT_LIB_DIR = $(LIB_FILE:/%=/)
+# object files used in the library archive
+LIB_OBJ := $(filter-out %$(EXE_OBJ),$(OBJ))
 
-# external library include directories
-EXT_INC_DIR := $(EXT_LIB_DIR:%=%/include)
+# external libraries
+EXT_LIB_DIR := $(filter-out %.a,$(wildcard $(LIB_DIR)/*))
+EXT_LIB := $(notdir $(EXT_LIB_DIR))
+EXT_LIB_A := $(EXT_LIB:%=$(LIB_DIR)/lib%.a)
 
-# external library archive files
-EXT_LIB_A := $(EXT_LIB_DIR)/$(EXT_LIB).a
 
 ### Language Specific ###
 # compiler
 ifeq ($(SRC_EXT),c)
 	CC := gcc
-else ifeq ($(SRC_EXT),$(filter $(SRC_EXT), cpp cc))
+else ifeq ($(SRC_EXT),$(filter $(SRC_EXT),cpp cc))
 	CC := g++
 endif
 
 # preprocessor flags
-CPPFLAGS += -I$(INC_DIR) $(EXT_INC_DIR:%=-I%)
+CPPFLAGS += -I$(INC_DIR)
 
 # compiler flags
 CFLAGS += -g -std=c99 -pedantic -Wall -Wextra                              \
@@ -82,8 +91,8 @@ CFLAGS += -g -std=c99 -pedantic -Wall -Wextra                              \
 CXXFLAGS += $(CFLAGS)
 
 # linker flags
-LDFLAGS += $(EXT_LIB_DIR:%=-L%)
-LDLIBS += $(EXT_LIB:lib%=-l%) -lm
+LDFLAGS += -L$(LIB_DIR) 
+LDLIBS += $(EXT_LIB:%=-l%) -lm
 
 
 ###--------------------------------- Rules ----------------------------------###
@@ -96,7 +105,7 @@ all: executable library test
 ### External Libraries ###
 $(LIB_DIR)/%.a:
 	@echo building $@
-	@$(MAKE) -C $(@D)
+	@$(MAKE) -C $(LIB_DIR)/$(*:lib%=%) install prefix=`pwd`
 
 
 ### Run Executable ###
@@ -108,9 +117,9 @@ run: $(TGT_EXE)
 executable: $(TGT_EXE)
 
 # link the final executable
-$(TGT_EXE): $(OBJ) $(EXT_LIB_A)
+$(TGT_EXE): $(EXT_LIB_A) $(OBJ)
 	@echo linking: $@
-	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	@$(CC) $(LDFLAGS) $(OBJ) $(LDLIBS) -o $@
 	@echo successfully built: $@
 
 # compile object files, and generate dependency files
@@ -124,20 +133,38 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.$(SRC_EXT)
 
 
 ### Library ###
-library: $(TGT_LIB)
+library: $(TGT_LIB_A)
 
 # creates static library from project's object files
-$(TGT_LIB): $(OBJ)
-	@echo archiving: $(TGT_LIB)
-	@$(AR) -rcs $@ $^
+$(TGT_LIB_A): $(EXT_LIB_A) $(LIB_OBJ)
+	@$(RM) $(TGT_LIB_A)
+	@echo archiving: $(TGT_LIB_A)
+	@$(AR) -rcs $@ $(LIB_OBJ)
+	@echo merging with: $(EXT_LIB_A)
+	@libtool -static -o $@ $@ $(EXT_LIB_A)
 	@echo successfully built: $@
 
+
+### Install ###
+install: $(TGT_LIB_A)
+	@echo installing to $(prefix)
+	@mkdir -p $(INST_INC)
+	@mkdir -p $(INST_LIB)
+	@install -m 0644 $(INC_DIR)/*.h $(INST_INC)
+	@install -m 0644 $^ $(INST_LIB)
+	@echo successfully installed: $(INST_CLN)
+#	$(file >> .uninstall,$(INST_CLN))
+	@echo $(INST_CLN) >> .uninstall
+
+uninstall:
+	@$(RM) -r $(shell cat .uninstall) .uninstall
+	@echo successfully uninstalled
 
 ### Test ###
 test: $(TST_EXE)
 
 # link the test executable
-$(TST_EXE): $(TST_OBJ) $(TGT_LIB)
+$(TST_EXE): $(TST_OBJ) $(TGT_LIB_A)
 	@echo linking: $@
 	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 	@echo successfully built: $@
@@ -154,9 +181,16 @@ $(TST_OBJ_DIR)/%.o: $(TST_SRC_DIR)/%.$(SRC_EXT)
 
 ### Clean ###
 clean:
-	@$(RM) -r $(CLN)
 	@echo cleaning: $(CLN)
+	@$(RM) -r $(CLN)
 
+clean-libs:
+	@for dir in $(EXT_LIB_DIR); do     \
+		make -C $$dir uninstall clean clean-all; \
+	done
+
+clean-all: clean clean-libs
 
 ### Phony Targets ###
-.PHONY: all run executable library test clean
+.PHONY: all executable library test run install uninstall clean clean-libs \
+	clean-all

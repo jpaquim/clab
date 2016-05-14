@@ -1,4 +1,4 @@
 [submodule "lib/pcg-c"]
-	path = lib/pcg-c
+	path = lib/pcg_random
 	url = https://github.com/jpaquim/pcg-c.git
 	branch = library
